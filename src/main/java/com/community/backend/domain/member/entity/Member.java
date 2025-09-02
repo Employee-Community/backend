@@ -1,6 +1,7 @@
 package com.community.backend.domain.member.entity;
 
 import com.community.backend.common.entity.BaseEntity;
+import com.community.backend.domain.member.enums.LogInType;
 import com.community.backend.domain.member.enums.MemberRole;
 
 import jakarta.persistence.Column;
@@ -27,8 +28,9 @@ public class Member extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idx;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "login_type", nullable = false)
-	private String loginType;
+	private LogInType loginType;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -53,5 +55,28 @@ public class Member extends BaseEntity {
 	private MemberRole role = MemberRole.FREE;
 
 	@Column(name = "state", nullable = false)
-	private Integer state = 1;
+	private Integer state;
+
+	private Member(LogInType loginType, String name, String id, String password, String email, String phone,
+		String nickname, MemberRole role, Integer state) {
+
+		this.loginType = loginType;
+		this.name = name;
+		this.id = id;
+		this.password = password;
+		this.email = email;
+		this.phone = phone;
+		this.nickname = nickname;
+		this.role = role;
+		this.state = state;
+	}
+
+	/*
+	** description : 기본 회원가입 추후 Oauth 기준으로 LoginType이 다를 것으로 인지하여 팩토리 메서드 패턴을 이용하여 분리
+	 */
+	public static Member createDefault(String name, String id, String password, String email, String phone,
+		String nickname, MemberRole role) {
+
+		return new Member(LogInType.DEFAULT, name, id, password, email, phone, nickname, role, 1);
+	}
 }
