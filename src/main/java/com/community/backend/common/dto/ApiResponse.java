@@ -2,14 +2,11 @@ package com.community.backend.common.dto;
 
 import java.time.LocalDateTime;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApiResponse<T> {
 
 	private boolean success;
@@ -32,3 +29,4 @@ public class ApiResponse<T> {
 		return new ApiResponse<>(false, message, errorData);
 	}
 }
+
