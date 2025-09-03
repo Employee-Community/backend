@@ -1,0 +1,73 @@
+package com.community.backend.domain.member.service;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.community.backend.common.security.PasswordEncoder;
+import com.community.backend.domain.member.dto.request.MemberLogInDto;
+import com.community.backend.domain.member.dto.request.MemberRegisterDto;
+import com.community.backend.domain.member.dto.response.MemberResponseDto;
+import com.community.backend.domain.member.entity.Member;
+import com.community.backend.domain.member.repository.MemberRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class MemberServiceImpl implements MemberService {
+
+	private final PasswordEncoder passwordEncoder;
+	private final MemberRepository memberRepository;
+
+	@Override
+	public void registerMember(MemberRegisterDto request) {
+
+		if(memberRepository.getMemberByEmail(request.email()).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+		}
+
+		Member member = Member.createDefault(request.name(), request.id(), passwordEncoder.encode(request.password()), request.email(),
+			request.phone(), request.nickname(), request.role());
+
+		memberRepository.registerMember(member);
+	}
+
+	@Override
+	public void deleteMember(Long idx, String password) {
+
+		Member member = memberRepository.getMemberByIdx(idx).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+		);
+
+		if(!passwordEncoder.matches(password, member.getPassword())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
+		}
+
+		memberRepository.deleteMember(member);
+	}
+
+	@Override
+	public MemberResponseDto logInMember(MemberLogInDto request) {
+
+		Member member = memberRepository.getMemberById(request.id()).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+		);
+
+		if(!passwordEncoder.matches(request.password(), member.getPassword())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
+		}
+
+		return MemberResponseDto.fromMember(member);
+	}
+
+	@Override
+	public MemberResponseDto getMemberByIdx(Long idx) {
+
+		Member member = memberRepository.getMemberByIdx(idx).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+		);
+
+		return MemberResponseDto.fromMember(member);
+	}
+}
