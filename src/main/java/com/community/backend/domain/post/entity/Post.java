@@ -51,4 +51,8 @@ public class Post extends BaseEntity {
 
 	@Column(name = "state", nullable = false)
 	private Integer state = 1;
+
+	public void setViewCount(int i) {
+		this.viewCount = i;
+	}
 }
