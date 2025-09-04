@@ -6,15 +6,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.community.backend.common.dto.ApiResponse;
 import com.community.backend.common.dto.CommonPagingResponseDto;
+import com.community.backend.domain.post.dto.request.PostCreateRequestDto;
+import com.community.backend.domain.post.dto.request.PostModifyRequestDto;
 import com.community.backend.domain.post.dto.request.PostPagingRequestDto;
 import com.community.backend.domain.post.dto.response.PostResponseDto;
 import com.community.backend.domain.post.service.PostService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/v1/posts")
@@ -26,15 +32,13 @@ public class PostController {
 
     @GetMapping("/{postIdx}")
     public ResponseEntity<ApiResponse<PostResponseDto>> getPost(
-        @PathVariable Long postIdx
-    ) {
+            @PathVariable Long postIdx) {
         return ResponseEntity.ok(ApiResponse.success("ok", postService.getPost(postIdx)));
     }
-    
+
     @GetMapping("")
     public ResponseEntity<ApiResponse<CommonPagingResponseDto<List<PostResponseDto>>>> getPosts(
-        @ModelAttribute PostPagingRequestDto requestDto
-    ) {
+            @ModelAttribute PostPagingRequestDto requestDto) {
         return ResponseEntity.ok(ApiResponse.success("ok", postService.getPosts(requestDto)));
     }
 
@@ -42,4 +46,31 @@ public class PostController {
     public ResponseEntity<ApiResponse<List<PostResponseDto>>> getPopularPosts() {
         return ResponseEntity.ok(ApiResponse.success("ok", postService.getPopularPosts()));
     }
+
+    @PostMapping("create")
+    public ResponseEntity<ApiResponse<Void>> createPost(
+            @Valid @RequestBody PostCreateRequestDto requestDto) {
+        postService.createPost(requestDto);
+
+        return ResponseEntity.ok(ApiResponse.success("ok", null));
+    }
+
+    @PostMapping("modify/{postIdx}")
+    public ResponseEntity<ApiResponse<Void>> modifyPost(
+            @Valid @RequestBody PostModifyRequestDto requestDto,
+            @PathVariable Long postIdx) {
+        postService.modifyPost(requestDto, postIdx);
+
+        return ResponseEntity.ok(ApiResponse.success("ok", null));
+    }
+
+    @PostMapping("delete/{postIdx}")
+    public ResponseEntity<ApiResponse<Void>> deletePost(
+            @PathVariable Long postIdx,
+            @RequestParam Long memberIdx) { // TODO : JWT에서 추출이 가능하면 그 방법으로
+        postService.deletePost(postIdx, memberIdx);
+
+        return ResponseEntity.ok(ApiResponse.success("ok", null));
+    }
+
 }
