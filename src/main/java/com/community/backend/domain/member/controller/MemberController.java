@@ -3,16 +3,19 @@ package com.community.backend.domain.member.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.community.backend.common.dto.ApiResponse;
+import com.community.backend.common.security.jwt.JwtBlackListService;
 import com.community.backend.common.security.jwt.JwtTokenProvider;
 import com.community.backend.domain.member.dto.request.MemberLogInDto;
 import com.community.backend.domain.member.dto.request.MemberRegisterDto;
@@ -30,6 +33,7 @@ public class MemberController {
 
 	private final MemberService memberService;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtBlackListService jwtBlackListService;
 
 	@PostMapping("/register")
 	public ResponseEntity<ApiResponse<Void>> registerMember(@RequestBody MemberRegisterDto request) {
@@ -67,8 +71,16 @@ public class MemberController {
 		return ResponseEntity.ok(ApiResponse.success("회원 조회가 성공적으로 완료되었습니다.", response));
 	}
 
+	@PostMapping("/logOut")
+	public ResponseEntity<ApiResponse<Void>> logOutMember(@CookieValue(value = "refresh") String refreshToken) {
+
+		jwtBlackListService.addBlackList(refreshToken);
+		return ResponseEntity.ok(ApiResponse.success("로그아웃이 성공적으로 완료되었습니다", null));
+	}
+
 	@PostMapping("/reissue")
 	public ResponseEntity<ApiResponse<Void>> reissueToken(HttpServletRequest request) {
+
 		if (request.getCookies() == null)
 			return null;
 
@@ -85,6 +97,10 @@ public class MemberController {
 
 		if(jwtTokenProvider.parseToken(refreshToken) == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.fail("유효하지 않은 토큰입니다.", null));
+		}
+
+		if(jwtBlackListService.isBlackList(refreshToken)) {
+			return ResponseEntity.badRequest().body(ApiResponse.fail("유효하지 않은 토큰입니다.", null));
 		}
 
 		String accessToken = jwtTokenProvider.createToken(jwtTokenProvider.getSubject(refreshToken), jwtTokenProvider.getEmail(refreshToken),

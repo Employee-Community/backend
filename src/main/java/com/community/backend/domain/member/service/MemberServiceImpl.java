@@ -1,8 +1,7 @@
 package com.community.backend.domain.member.service;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.community.backend.common.exception.BaseException;
 import com.community.backend.common.security.PasswordEncoder;
@@ -23,6 +22,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 
 	@Override
+	@Transactional
 	public void registerMember(MemberRegisterDto request) {
 
 		if(memberRepository.getMemberByEmail(request.email()).isPresent()) {
@@ -40,6 +40,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteMember(Long idx, String password) {
 
 		Member member = memberRepository.getMemberByIdx(idx).orElseThrow(
@@ -68,6 +69,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public MemberResponseDto getMemberByIdx(Long idx) {
 
 		Member member = memberRepository.getMemberByIdx(idx).orElseThrow(
