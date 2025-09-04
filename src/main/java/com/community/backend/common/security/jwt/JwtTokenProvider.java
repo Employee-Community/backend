@@ -80,12 +80,17 @@ public class JwtTokenProvider {
 		return parseToken(token).get("nickname", String.class);
 	}
 
+	public Long getExpire(String token) {
+
+		return parseToken(token).getExpiration().getTime() - System.currentTimeMillis();
+	}
+
 	public ResponseCookie createRefreshTokenCookie(String refresh) {
 
 		return ResponseCookie.from("refresh", refresh)
 			.httpOnly(true)
 			.maxAge(REFRESH_TOKEN_EXPIRATION_TIME)
-			.path("/v1/member/reissue")
+			.path("/")
 			.build();
 	}
 }
