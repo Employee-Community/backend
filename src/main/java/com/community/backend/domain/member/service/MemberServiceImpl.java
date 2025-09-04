@@ -22,6 +22,14 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 
 	@Override
+	public Member getMemberEntityById(Long memberIdx) {
+
+		return memberRepository.getMemberByIdx(memberIdx).orElseThrow(
+			() -> new BaseException(MemberExceptionEnum.MEMBER_NOT_FOUND)
+		);
+	}
+
+	@Override
 	@Transactional
 	public void registerMember(MemberRegisterDto request) {
 
