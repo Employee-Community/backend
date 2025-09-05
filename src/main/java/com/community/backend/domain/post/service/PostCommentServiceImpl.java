@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.community.backend.common.dto.CommonPagingResponseDto;
 import com.community.backend.domain.member.entity.Member;
 import com.community.backend.domain.member.service.MemberService;
-import com.community.backend.domain.post.dto.request.MyPostCommentPagingRequestDto;
 import com.community.backend.domain.post.dto.request.PostCommentPagingRequestDto;
 import com.community.backend.domain.post.dto.request.PostCommentRequestDto;
 import com.community.backend.domain.post.dto.request.PostCommentUpdateRequestDto;
@@ -81,18 +80,18 @@ public class PostCommentServiceImpl implements PostCommentService {
 
 	@Transactional(readOnly = true)
 	public CommonPagingResponseDto<List<PostCommentResponseDto>>
-		getPostComments(PostCommentPagingRequestDto request) {
+		getPostComments(Long postIdx, PostCommentPagingRequestDto request) {
 
 		request.clean();
 
 		// TODO 예외 처리
-		if(postJpaRepository.findById(request.getPostIdx()).isEmpty()) {
+		if(postJpaRepository.findById(postIdx).isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 
 		Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.Direction.DESC, "createdAt");
 		List<PostCommentResponseDto> postComments = postCommentJpaRepository
-			.findByPost_Idx(request.getPostIdx(), pageable)
+			.findByPost_Idx(postIdx, pageable)
 			.stream()
 			.map(PostCommentResponseDto::from)
 			.toList();
@@ -102,7 +101,7 @@ public class PostCommentServiceImpl implements PostCommentService {
 
 	@Transactional(readOnly = true)
 	public CommonPagingResponseDto<List<PostCommentResponseDto>>
-		getMyPostComments(MyPostCommentPagingRequestDto request, Long memberIdx) {
+		getMyPostComments(PostCommentPagingRequestDto request, Long memberIdx) {
 
 		request.clean();
 

@@ -17,13 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.community.backend.common.dto.ApiResponse;
 import com.community.backend.common.dto.CommonPagingResponseDto;
 import com.community.backend.common.security.jwt.JwtPayload;
-import com.community.backend.domain.post.dto.request.MyPostCommentPagingRequestDto;
 import com.community.backend.domain.post.dto.request.PostCommentPagingRequestDto;
 import com.community.backend.domain.post.dto.request.PostCommentRequestDto;
 import com.community.backend.domain.post.dto.request.PostCommentUpdateRequestDto;
 import com.community.backend.domain.post.dto.response.PostCommentResponseDto;
 import com.community.backend.domain.post.service.PostCommentService;
-import com.community.backend.domain.post.service.PostCommentServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -61,18 +59,19 @@ public class PostCommentController {
 		return ResponseEntity.ok(ApiResponse.success("댓글 삭제가 성공적으로 완료되었습니다", null));
 	}
 
-	@GetMapping
+	@GetMapping("/{postIdx}")
 	public ResponseEntity<ApiResponse<CommonPagingResponseDto<List<PostCommentResponseDto>>>> getPostComments(
+		@PathVariable Long postIdx,
 		@ModelAttribute PostCommentPagingRequestDto request) {
 
 		return ResponseEntity.ok(ApiResponse
 			.success("댓글 목록 조회가 성공적으로 완료되었습니다",
-				postCommentService.getPostComments(request)));
+				postCommentService.getPostComments(postIdx, request)));
 	}
 
 	@GetMapping("/me")
 	public ResponseEntity<ApiResponse<CommonPagingResponseDto<List<PostCommentResponseDto>>>> getMyPostComments(
-		@ModelAttribute MyPostCommentPagingRequestDto request,
+		@ModelAttribute PostCommentPagingRequestDto request,
 		@AuthenticationPrincipal JwtPayload jwtPayload) {
 
 		return ResponseEntity.ok(ApiResponse

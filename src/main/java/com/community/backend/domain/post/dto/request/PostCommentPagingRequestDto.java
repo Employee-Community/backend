@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 public class PostCommentPagingRequestDto extends CommonPagingRequestDto {
 
-	private Long postIdx;
-
 	public PostCommentPagingRequestDto() {
 		super();
 	}
