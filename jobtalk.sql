@@ -25,7 +25,6 @@ CREATE TABLE TBL_JOBTALK_POST_CATEGORY (
 
 CREATE TABLE TBL_JOBTALK_POST (
                                   idx BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                  name VARCHAR(100),
                                   member_idx BIGINT NOT NULL,
                                   category_idx BIGINT NOT NULL,
                                   title VARCHAR(255) NOT NULL,

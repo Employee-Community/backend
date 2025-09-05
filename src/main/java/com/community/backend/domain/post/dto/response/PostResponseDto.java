@@ -11,11 +11,13 @@ public class PostResponseDto {
 
 	private Long idx;
 
-	private String name;
-
 	private Long memberIdx;
 
+    private String nickname;
+
 	private Long categoryIdx;
+
+    private String categoryName;
 
 	private String title;
 
@@ -27,9 +29,10 @@ public class PostResponseDto {
 
     public PostResponseDto(Post post) {
         this.idx = post.getIdx();
-        this.name = post.getName();
         this.memberIdx = post.getMember().getIdx();
+        this.nickname = post.getMember().getNickname();
         this.categoryIdx = post.getCategory().getIdx();
+        this.categoryName = post.getCategory().getName();
         this.title = post.getTitle();
         this.contents = post.getContents();
         this.viewCount = post.getViewCount();

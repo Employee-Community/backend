@@ -13,24 +13,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "TBL_JOBTALK_POST")
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idx;
-
-	@Column(name="name", nullable = false)
-	private String name;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_idx", nullable = false)
@@ -43,7 +41,7 @@ public class Post extends BaseEntity {
 	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(name = "contents", nullable = false, columnDefinition = "TEXT")
+	@Column(name = "contents", nullable = false)
 	private String contents;
 
 	@Column(name = "view_count")
@@ -51,8 +49,4 @@ public class Post extends BaseEntity {
 
 	@Column(name = "state", nullable = false)
 	private Integer state = 1;
-
-	public void setViewCount(int i) {
-		this.viewCount = i;
-	}
 }

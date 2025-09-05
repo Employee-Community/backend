@@ -11,16 +11,12 @@ public class CommonPagingRequestDto implements ICommonPagingDto {
     private int size;
     private String keyword;
     private String search;
-    private long totalCount;
-    private int totalPage;
 
     public CommonPagingRequestDto() {
         this.page = 0;
         this.size = 10;
         this.keyword = "";
         this.search = "";
-        totalCount = 0;
-        totalPage = 0;
     }
 
     @Override
