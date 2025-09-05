@@ -75,7 +75,7 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void modifyPost(Post post) {
+    public void savePost(Post post) {
         jpaRepository.save(post);
     }
 }

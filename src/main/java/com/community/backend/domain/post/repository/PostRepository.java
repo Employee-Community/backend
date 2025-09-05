@@ -19,6 +19,6 @@ public interface PostRepository {
     // 게시글 생성
     void createPost(Post post, Long memberIdx, Long categoryIdx);
 
-    // 게시글 수정(삭제 포함)
-    void modifyPost(Post post);
+    // 게시글 저장(수정, 삭제)
+    void savePost(Post post);
 }
