@@ -5,19 +5,19 @@ import java.util.concurrent.TimeUnit;
 
 public interface RedisService<T> {
 
-    void setValue(String key, T value);
+    public void setValue(String key, T value);
 
-    void setValue(String key, T value, Long duration);
+    public void setValue(String key, T value, Long duration);
 
-    void setValue(String key, T value, Long duration, TimeUnit timeUnit);
+    public void setValue(String key, T value, Long duration, TimeUnit timeUnit);
 
-    void incrementValue(String key, Long delta);
+    public void incrementValue(String key, Long delta);
 
-    T getValue(String key);
+    public T getValue(String key);
 
-    Boolean hasKey(String key);
+    public Boolean hasKey(String key);
 
-    Set<String> getKeys(String keyPattern);
+    public Set<String> getKeys(String keyPattern);
 
-    void deleteValue(String key);
+    public void deleteValue(String key);
 }
