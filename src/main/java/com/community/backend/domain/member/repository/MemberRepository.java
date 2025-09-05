@@ -13,7 +13,5 @@ public interface MemberRepository {
 
 	Optional<Member> getMemberByIdx(Long idx);
 
-	void deleteMember(Member member);
-
 	Optional<Member> getMemberById(String id);
 }

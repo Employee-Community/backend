@@ -1,5 +1,7 @@
 package com.community.backend.domain.member.entity;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import com.community.backend.common.entity.BaseEntity;
 import com.community.backend.domain.member.enums.LogInType;
 import com.community.backend.domain.member.enums.MemberRole;
@@ -20,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Table(name="TBL_JOBTALK_MEMBER")
 @Entity
 @Getter
+@SQLRestriction("state <> 2")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
@@ -78,5 +81,9 @@ public class Member extends BaseEntity {
 		String nickname, MemberRole role) {
 
 		return new Member(LogInType.DEFAULT, name, id, password, email, phone, nickname, role, 1);
+	}
+
+	public void deleteMember() {
+		this.state = 2;
 	}
 }

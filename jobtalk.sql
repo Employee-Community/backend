@@ -39,12 +39,12 @@ CREATE TABLE TBL_JOBTALK_POST (
 
 CREATE TABLE TBL_JOBTALK_COMMENT (
                                      idx BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                     post_id BIGINT NOT NULL,
+                                     post_idx BIGINT NOT NULL,
                                      member_idx BIGINT NOT NULL,
                                      content TEXT NOT NULL,
                                      state TINYINT NOT NULL DEFAULT 1,
                                      created_at DATETIME,
                                      updated_at DATETIME,
-                                     FOREIGN KEY (post_id) REFERENCES TBL_JOBTALK_POST(idx),
+                                     FOREIGN KEY (post_idx) REFERENCES TBL_JOBTALK_POST(idx),
                                      FOREIGN KEY (member_idx) REFERENCES TBL_JOBTALK_MEMBER(idx)
 );
