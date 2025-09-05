@@ -41,7 +41,7 @@ public class JwtTokenProvider {
 			.setSubject(String.valueOf(idx))
 			.claim("email", email)
 			.claim("nickname", nickname)
-			.setExpiration(new Date(System.currentTimeMillis() + expire * 1000L))
+			.setExpiration(new Date(System.currentTimeMillis() + expire))
 			.setIssuedAt(new Date())
 			.signWith(key, signatureAlgorithm)
 			.compact();
