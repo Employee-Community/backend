@@ -11,12 +11,12 @@ import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.community.backend.common.dto.CommonPagingResponseDto;
 import com.community.backend.common.exception.BaseException;
 import com.community.backend.common.security.jwt.JwtPayload;
+import com.community.backend.common.service.RedisService;
 import com.community.backend.domain.post.dto.request.PostCreateRequestDto;
 import com.community.backend.domain.post.dto.request.PostModifyRequestDto;
 import com.community.backend.domain.post.dto.request.PostPagingRequestDto;
@@ -33,9 +33,10 @@ import lombok.RequiredArgsConstructor;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final StringRedisTemplate stringRedisTemplate;
+    private final RedisService<Long> redisService;
 
     private final static String REDIS_KEY_PREFIX_VIEW_COUNT = "post:views";
+    private final static Long REDIS_DURATION_VIEW_COUNT = 60L * 60L;
 
     @Transactional
     public PostResponseDto getPost(Long postIdx) {
@@ -51,8 +52,11 @@ public class PostServiceImpl implements PostService {
         LocalDateTime now = LocalDateTime.now();
         String redisKey = String.format("%s:%d:%s", REDIS_KEY_PREFIX_VIEW_COUNT, post.getIdx(),
                 now.format(DateTimeFormatter.ofPattern("HHmm")));
-        stringRedisTemplate.opsForValue().increment(redisKey, 1);
-        stringRedisTemplate.expire(redisKey, java.time.Duration.ofHours(1));
+        if (redisService.hasKey(redisKey) == false) {
+            redisService.setValue(redisKey, postIdx, REDIS_DURATION_VIEW_COUNT);
+        } else {
+            redisService.incrementValue(redisKey, 1L);
+        }
 
         result = new PostResponseDto(post);
 
@@ -84,9 +88,9 @@ public class PostServiceImpl implements PostService {
     public List<PostResponseDto> getPopularPosts() {
         List<PostResponseDto> result = new ArrayList<>();
 
-        String redisKey = String.format("%s:*:*", REDIS_KEY_PREFIX_VIEW_COUNT);
+        String keyPattern = String.format("%s:*:*", REDIS_KEY_PREFIX_VIEW_COUNT);
 
-        Set<String> keys = stringRedisTemplate.keys(redisKey);
+        Set<String> keys = redisService.getKeys(keyPattern);
 
         Map<Long, Long> viewCountMap = new HashMap<>();
         if (keys != null && !keys.isEmpty()) {
@@ -98,7 +102,8 @@ public class PostServiceImpl implements PostService {
                 String[] parts = key.split(":");
                 if (parts.length == 4) {
                     Long postIdx = Long.parseLong(parts[2]);
-                    Integer viewCount = Integer.parseInt(stringRedisTemplate.opsForValue().get(key));
+
+                    Integer viewCount = Integer.parseInt(redisService.getValue(key).toString());
 
                     if (viewCountMap.containsKey(postIdx)) {
                         viewCountMap.put(postIdx, viewCountMap.get(postIdx) + viewCount);

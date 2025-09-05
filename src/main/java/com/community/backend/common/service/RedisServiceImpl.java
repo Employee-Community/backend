@@ -34,7 +34,12 @@ public class RedisServiceImpl<T> implements RedisService<T> {
 
     @Override
     public void incrementValue(String key, Long delta) {
-        redisTemplate.opsForValue().increment(key, delta);
+        T value = redisTemplate.opsForValue().get(key);
+
+        // 값이 숫자형인 경우에만 증가
+        if (value != null && value instanceof Number) {
+            redisTemplate.opsForValue().increment(key, delta);
+        }
     }
 
     @Override

@@ -2,8 +2,9 @@ package com.community.backend.common.security.jwt;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import com.community.backend.common.service.RedisService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtBlackListService {
 
 	private final JwtTokenProvider jwtTokenProvider;
-	private final RedisTemplate<String, String> redisTemplate;
+	private final RedisService<String> redisService;
 	private static final String REFRESH_BLACKLIST_PREFIX = "refresh_blacklist:";
 
 	/**
@@ -20,11 +21,11 @@ public class JwtBlackListService {
 	 */
 	public void addBlackList(String token) {
 
-		redisTemplate.opsForValue().set(
-			REFRESH_BLACKLIST_PREFIX + token,
-			"logOut",
-			jwtTokenProvider.getExpire(token),
-			TimeUnit.MILLISECONDS);
+		redisService.setValue(
+				REFRESH_BLACKLIST_PREFIX + token,
+				"logOut",
+				jwtTokenProvider.getExpire(token),
+				TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -32,7 +33,6 @@ public class JwtBlackListService {
 	 */
 	public boolean isBlackList(String token) {
 
-		return Boolean.TRUE.equals(redisTemplate.hasKey(REFRESH_BLACKLIST_PREFIX + token));
+		return Boolean.TRUE.equals(redisService.hasKey(REFRESH_BLACKLIST_PREFIX + token));
 	}
-
 }
