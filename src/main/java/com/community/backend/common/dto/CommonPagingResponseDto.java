@@ -29,8 +29,6 @@ public class CommonPagingResponseDto<T> implements ICommonPagingDataDto<T> {
         this.size = requestDto.getSize();
         this.keyword = requestDto.getKeyword();
         this.search = requestDto.getSearch();
-        this.totalCount = requestDto.getTotalCount();
-        this.totalPage = requestDto.getTotalPage();
         this.data = data;
     }
 

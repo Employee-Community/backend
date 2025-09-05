@@ -1,5 +1,7 @@
 package com.community.backend.domain.post.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,12 +12,9 @@ import com.community.backend.domain.post.entity.Post;
 @Repository
 public interface PostJpaRepository extends JpaRepository<Post, Long> {
 
-    Page<Post> findByTitleContaining(String title, Pageable pageable);
-    Page<Post> findByTitleContainingAndCategory_Idx(String title, Long categoryIdx, Pageable pageable);
+    // 단일 조회
+    Optional<Post> findByIdx(Long idx);
 
-    Page<Post> findByContentsContaining(String contents, Pageable pageable);
-    Page<Post> findByContentsContainingAndCategory_Idx(String contents, Long categoryIdx, Pageable pageable);
-
-    Page<Post> findByMember_NameContaining(String memberName, Pageable pageable);
-    Page<Post> findByMember_NameContainingAndCategory_Idx(String memberName, Long categoryIdx, Pageable pageable);
+    // 전체 검색
+    Page<Post> findAll(Pageable pageable);
 }
