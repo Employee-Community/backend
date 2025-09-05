@@ -3,17 +3,20 @@ package com.community.backend.domain.post.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.community.backend.common.dto.ApiResponse;
 import com.community.backend.common.dto.CommonPagingResponseDto;
+import com.community.backend.common.security.jwt.JwtPayload;
 import com.community.backend.domain.post.dto.request.PostCreateRequestDto;
 import com.community.backend.domain.post.dto.request.PostModifyRequestDto;
 import com.community.backend.domain.post.dto.request.PostPagingRequestDto;
@@ -55,22 +58,22 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("ok", null));
     }
 
-    @PostMapping("modify/{postIdx}")
+    @PutMapping("/{postIdx}")
     public ResponseEntity<ApiResponse<Void>> modifyPost(
             @Valid @RequestBody PostModifyRequestDto requestDto,
-            @PathVariable Long postIdx) {
-        postService.modifyPost(requestDto, postIdx);
+            @PathVariable Long postIdx,
+            @AuthenticationPrincipal JwtPayload jwtPayload) {
+        postService.modifyPost(requestDto, postIdx, jwtPayload);
 
         return ResponseEntity.ok(ApiResponse.success("ok", null));
     }
 
-    @PostMapping("delete/{postIdx}")
+    @DeleteMapping("/{postIdx}")
     public ResponseEntity<ApiResponse<Void>> deletePost(
             @PathVariable Long postIdx,
-            @RequestParam Long memberIdx) { // TODO : JWT에서 추출이 가능하면 그 방법으로
-        postService.deletePost(postIdx, memberIdx);
+            @AuthenticationPrincipal JwtPayload jwtPayload) { // TODO : JWT에서 추출이 가능하면 그 방법으로
+        postService.deletePost(postIdx, jwtPayload);
 
         return ResponseEntity.ok(ApiResponse.success("ok", null));
     }
-
 }

@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 
 import com.community.backend.common.dto.CommonPagingResponseDto;
 import com.community.backend.common.exception.BaseException;
+import com.community.backend.common.security.jwt.JwtPayload;
 import com.community.backend.domain.post.dto.request.PostCreateRequestDto;
 import com.community.backend.domain.post.dto.request.PostModifyRequestDto;
 import com.community.backend.domain.post.dto.request.PostPagingRequestDto;
 import com.community.backend.domain.post.dto.response.PostResponseDto;
 import com.community.backend.domain.post.entity.Post;
 import com.community.backend.domain.post.exception.PostExceptionEnum;
-import com.community.backend.domain.post.repository.PostJpaRepository;
 import com.community.backend.domain.post.repository.PostRepository;
 
 import jakarta.transaction.Transactional;
@@ -133,26 +133,26 @@ public class PostServiceImpl implements PostService {
     }
 
     @Transactional
-    public void modifyPost(PostModifyRequestDto requestDto, Long postIdx) {
+    public void modifyPost(PostModifyRequestDto requestDto, Long postIdx, JwtPayload jwtPayload) {
         Post post = existPost(postIdx);
 
-        isPostMemberMatch(post, requestDto.memberIdx());
+        isPostMemberMatch(post, jwtPayload.idx());
 
         post.setTitle(requestDto.title());
         post.setContents(requestDto.contents());
 
-        postRepository.modifyPost(post);
+        postRepository.savePost(post);
     }
 
     @Transactional
-    public void deletePost(Long postIdx, Long memberIdx) {
+    public void deletePost(Long postIdx, JwtPayload jwtPayload) {
         Post post = existPost(postIdx);
 
-        isPostMemberMatch(post, memberIdx);
+        isPostMemberMatch(post, jwtPayload.idx());
 
         post.setState(2);
 
-        postRepository.modifyPost(post);
+        postRepository.savePost(post);
     }
 
     // 검증 메소드
