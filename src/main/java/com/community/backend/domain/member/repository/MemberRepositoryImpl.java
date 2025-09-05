@@ -34,12 +34,6 @@ public class MemberRepositoryImpl implements MemberRepository {
 	}
 
 	@Override
-	public void deleteMember(Member member) {
-
-		jpaRepository.delete(member);
-	}
-
-	@Override
 	public Optional<Member> getMemberById(String id) {
 
 		return jpaRepository.findById(id);

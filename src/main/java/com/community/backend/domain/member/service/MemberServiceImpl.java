@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
 			throw new BaseException(MemberExceptionEnum.INVALID_PASSWORD);
 		}
 
-		memberRepository.deleteMember(member);
+		member.deleteMember();
 	}
 
 	@Override
