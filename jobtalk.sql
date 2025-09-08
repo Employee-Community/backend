@@ -48,3 +48,15 @@ CREATE TABLE TBL_JOBTALK_COMMENT (
                                      FOREIGN KEY (post_idx) REFERENCES TBL_JOBTALK_POST(idx),
                                      FOREIGN KEY (member_idx) REFERENCES TBL_JOBTALK_MEMBER(idx)
 );
+
+
+CREATE TABLE TBL_JOBTALK_MEMBER_CHARGE_HISTORY (
+                                                   idx BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                                   member_idx BIGINT NOT NULL,
+                                                   charge_amount INT NOT NULL,
+                                                   payment_type VARCHAR(100) NOT NULL,
+                                                   created_at DATETIME,
+                                                   updated_at DATETIME,
+
+                                                   FOREIGN KEY (member_idx) REFERENCES TBL_JOBTALK_MEMBER(idx)
+);
