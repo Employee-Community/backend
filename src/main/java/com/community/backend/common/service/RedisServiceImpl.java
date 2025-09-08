@@ -4,11 +4,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
 @RequiredArgsConstructor
 public class RedisServiceImpl<T> implements RedisService<T> {
 
@@ -34,17 +32,26 @@ public class RedisServiceImpl<T> implements RedisService<T> {
 
     @Override
     public void incrementValue(String key, Long delta) {
-        T value = redisTemplate.opsForValue().get(key);
+        try {
+            Object value = redisTemplate.opsForValue().get(key);
 
-        // 값이 숫자형인 경우에만 증가
-        if (value != null && value instanceof Number) {
-            redisTemplate.opsForValue().increment(key, delta);
+            // 값이 숫자형인 경우에만 증가
+            if (value != null && value instanceof Number) {
+                redisTemplate.opsForValue().increment(key, delta);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public T getValue(String key) {
-        return redisTemplate.opsForValue().get(key);
+        try {
+            return (T) redisTemplate.opsForValue().get(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
