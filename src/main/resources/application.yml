@@ -21,3 +21,12 @@ spring:
 jwt:
   secret:
     key: ${SECRET_KEY}
+
+webclient:
+  payment:
+    baseurl: ${PAYMENT_WEBCLIENT_BASEURL}
+
+iamport:
+  secret: ${IAMPORT_SECRET}
+  api:
+    key: ${IAMPORT_API_KEY}
