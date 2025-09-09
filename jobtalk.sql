@@ -48,3 +48,15 @@ CREATE TABLE TBL_JOBTALK_COMMENT (
                                      FOREIGN KEY (post_idx) REFERENCES TBL_JOBTALK_POST(idx),
                                      FOREIGN KEY (member_idx) REFERENCES TBL_JOBTALK_MEMBER(idx)
 );
+
+
+CREATE TABLE TBL_ADMIN_MAIL_HISTORY (
+                                     idx BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                     sender_email NVARCHAR(100) NOT NULL,
+                                     receiver_email NVARCHAR(100) NOT NULL,
+                                     subject NVARCHAR(100) NOT NULL,
+                                     text NVARCHAR(2000) NOT NULL,
+                                     created_at DATETIME,
+                                     updated_at DATETIME,
+                                     mail_code NVARCHAR(10) NOT NULL
+)

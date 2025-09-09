@@ -23,7 +23,11 @@ public class MailController {
 
     @PostMapping("/send")
     public ResponseEntity<ApiResponse<MailCode>> sendMail(@Valid @RequestBody MailSendRequestDto request) {
-        MailCode code = mailService.sendMail(request);
-        return ResponseEntity.ok(ApiResponse.success("ok", code));
+        try {
+            MailCode code = mailService.sendMail(request);
+            return ResponseEntity.ok(ApiResponse.success("ok", code));
+        } catch (Exception e) {
+            return ResponseEntity.ok(ApiResponse.success("ok", MailCode.FAIL));
+        }
     }
 }
