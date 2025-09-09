@@ -86,4 +86,8 @@ public class Member extends BaseEntity {
 	public void deleteMember() {
 		this.state = 2;
 	}
+
+	public void changeMemberRole(MemberRole newRole) {
+		this.role = newRole;
+	}
 }

@@ -37,6 +37,8 @@ jwt:
 webclient:
   payment:
     baseurl: ${PAYMENT_WEBCLIENT_BASEURL}
+  internal:
+    baseurl: ${INTERNAL_WEBCLIENT_BASEURL}
 
 iamport:
   secret: ${IAMPORT_SECRET}
