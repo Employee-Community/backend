@@ -1,12 +1,17 @@
 package com.community.backend.common.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.community.backend.common.service.RedisService;
+import com.community.backend.common.service.RedisServiceImpl;
 
 @Configuration
 public class RedisConfig {
@@ -37,7 +42,7 @@ public class RedisConfig {
         if (!redisPassword.isEmpty()) {
             config.setPassword(redisPassword);
         }
-        
+
         return new LettuceConnectionFactory(config);
     }
 
@@ -48,13 +53,37 @@ public class RedisConfig {
         template.setConnectionFactory(redisConnectionFactory());
 
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 
         template.setDefaultSerializer(new StringRedisSerializer());
 
         return template;
+    }
+
+    @Bean
+    public RedisTemplate<String, Long> longTypeRedisTemplate() {
+        RedisTemplate<String, Long> template = new RedisTemplate<>();
+
+        template.setConnectionFactory(redisConnectionFactory());
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericToStringSerializer<>(Long.class));
+
+        template.setDefaultSerializer(new StringRedisSerializer());
+
+        return template;
+    }
+
+    @Bean
+    public RedisService<String> redisStringService(RedisTemplate<String, String> redisTemplate) {
+        return new RedisServiceImpl<>(redisTemplate);
+    }
+
+    @Bean
+    public RedisService<Long> redisLongService(RedisTemplate<String, Long> redisTemplate) {
+        return new RedisServiceImpl<>(redisTemplate);
     }
 }

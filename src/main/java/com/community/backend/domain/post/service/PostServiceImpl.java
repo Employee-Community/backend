@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
         String redisKey = String.format("%s:%d:%s", REDIS_KEY_PREFIX_VIEW_COUNT, post.getIdx(),
                 now.format(DateTimeFormatter.ofPattern("HHmm")));
         if (redisService.hasKey(redisKey) == false) {
-            redisService.setValue(redisKey, postIdx, REDIS_DURATION_VIEW_COUNT);
+            redisService.setValue(redisKey, 1L, REDIS_DURATION_VIEW_COUNT);
         } else {
             redisService.incrementValue(redisKey, 1L);
         }
