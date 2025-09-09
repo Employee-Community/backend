@@ -1,11 +1,15 @@
 package com.community.backend.domain.member.controller;
 
+import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.community.backend.common.dto.ApiResponse;
 import com.community.backend.common.security.jwt.JwtBlackListService;
+import com.community.backend.common.security.jwt.JwtPayload;
 import com.community.backend.common.security.jwt.JwtTokenProvider;
 import com.community.backend.domain.member.dto.request.MemberLogInDto;
 import com.community.backend.domain.member.dto.request.MemberRegisterDto;
+import com.community.backend.domain.member.dto.request.MembershipChangeDto;
 import com.community.backend.domain.member.dto.response.MemberResponseDto;
+import com.community.backend.domain.member.enums.MemberRole;
 import com.community.backend.domain.member.service.MemberService;
 
 import jakarta.servlet.http.Cookie;
@@ -110,5 +117,15 @@ public class MemberController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
 			.body(ApiResponse.success("Access 토큰을 재발급했습니다.", null));
+	}
+
+	@PatchMapping("/role")
+	public ResponseEntity<ApiResponse<Void>> changeMembership(
+		@AuthenticationPrincipal JwtPayload payload,
+		@RequestBody MembershipChangeDto request
+	) {
+
+		memberService.changeMembership(payload.idx(), request);
+		return ResponseEntity.ok(ApiResponse.success("멤버쉽이 성공적으로 변경되었습니다.", null));
 	}
 }

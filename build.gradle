@@ -60,6 +60,8 @@ dependencies {
 	// EMAIL
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	// Data 직렬화
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"

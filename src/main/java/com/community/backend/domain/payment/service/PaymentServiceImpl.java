@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.community.backend.common.exception.BaseException;
+import com.community.backend.common.webclient.payment.dto.PaymentInResponseDto;
 import com.community.backend.domain.member.entity.Member;
 import com.community.backend.domain.member.repository.MemberRepository;
 import com.community.backend.domain.member.service.MemberService;
+import com.community.backend.domain.payment.dto.response.ChargeHistoryResponseDto;
 import com.community.backend.domain.payment.dto.response.PaymentDetailResponseDto;
 import com.community.backend.domain.payment.dto.response.PaymentResponseDto;
 import com.community.backend.domain.payment.entity.ChargeHistory;
@@ -54,5 +56,16 @@ public class PaymentServiceImpl implements PaymentService {
 		paymentJpaRepository.save(history);
 
 		return result;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ChargeHistoryResponseDto getChargeHistory(String impUid) {
+
+		ChargeHistory history = paymentJpaRepository.findByImpUid(impUid).orElseThrow(
+			() -> new BaseException(PaymentExceptionEnum.HISTORY_NOT_FOUND)
+		);
+
+		return ChargeHistoryResponseDto.from(history);
 	}
 }
