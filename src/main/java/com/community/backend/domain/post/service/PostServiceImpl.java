@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.community.backend.common.dto.CommonPagingResponseDto;
 import com.community.backend.common.exception.BaseException;
 import com.community.backend.common.security.jwt.JwtPayload;
-import com.community.backend.common.service.RedisService;
+import com.community.backend.common.util.RedisService;
 import com.community.backend.domain.post.dto.request.PostCreateRequestDto;
 import com.community.backend.domain.post.dto.request.PostModifyRequestDto;
 import com.community.backend.domain.post.dto.request.PostPagingRequestDto;

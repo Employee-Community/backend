@@ -30,4 +30,15 @@ public class MailController {
             return ResponseEntity.ok(ApiResponse.success("ok", MailCode.FAIL));
         }
     }
+
+    @PostMapping("/async/send")
+    public ResponseEntity<ApiResponse<Void>> sendMailAsync(@RequestBody MailSendRequestDto request) {
+        try {
+            mailService.sendMailAsync(request);
+            return ResponseEntity.ok(ApiResponse.success("ok", null));
+        } catch (Exception e) {
+            return ResponseEntity.ok(ApiResponse.success("ok", null));
+        }
+    }
+
 }

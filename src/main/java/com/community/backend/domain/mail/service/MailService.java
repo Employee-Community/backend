@@ -5,5 +5,7 @@ import com.community.backend.domain.mail.enums.MailCode;
 
 public interface MailService {
 
-    public MailCode sendMail(MailSendRequestDto requestDto);
+    void sendMailAsync(MailSendRequestDto requestDto);
+
+    MailCode sendMail(MailSendRequestDto requestDto);
 }

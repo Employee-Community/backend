@@ -1,4 +1,4 @@
-package com.community.backend.common.service;
+package com.community.backend.common.util;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;

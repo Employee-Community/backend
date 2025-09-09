@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 
-import com.community.backend.common.service.RedisService;
+import com.community.backend.common.util.RedisService;
 
 import lombok.RequiredArgsConstructor;
 
