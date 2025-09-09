@@ -50,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
 			throw new BaseException(PaymentExceptionEnum.PAYMENT_NOT_FOUND);
 		}
 
-		ChargeHistory history = ChargeHistory.of(member, result.response().amount(), result.response().pay_method());
+		ChargeHistory history = ChargeHistory.of(member, impUid, result.response().amount(), result.response().pay_method());
 		paymentJpaRepository.save(history);
 
 		return result;

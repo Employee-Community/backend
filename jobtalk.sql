@@ -53,6 +53,7 @@ CREATE TABLE TBL_JOBTALK_COMMENT (
 CREATE TABLE TBL_JOBTALK_MEMBER_CHARGE_HISTORY (
                                                    idx BIGINT AUTO_INCREMENT PRIMARY KEY,
                                                    member_idx BIGINT NOT NULL,
+                                                   imp_uid VARCHAR(100) NOT NULL,
                                                    charge_amount INT NOT NULL,
                                                    payment_type VARCHAR(100) NOT NULL,
                                                    created_at DATETIME,

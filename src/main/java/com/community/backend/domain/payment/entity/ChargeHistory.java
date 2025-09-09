@@ -30,19 +30,23 @@ public class ChargeHistory extends BaseEntity {
 	@JoinColumn(name = "member_idx", nullable = false)
 	private Member member;
 
+	@Column(name = "imp_uid", nullable = false)
+	private String impUid;
+
 	@Column(name = "charge_amount", nullable = false)
 	private Integer amount;
 
 	@Column(name = "payment_type", nullable = false)
 	private String paymentType;
 
-	private ChargeHistory(Member member, Integer amount, String paymentType) {
+	private ChargeHistory(Member member, String impUid, Integer amount, String paymentType) {
 		this.member = member;
+		this.impUid = impUid;
 		this.amount = amount;
 		this.paymentType = paymentType;
 	}
 
-	public static ChargeHistory of(Member member, Integer amount, String paymentType) {
-		return new ChargeHistory(member, amount, paymentType);
+	public static ChargeHistory of(Member member, String impUid, Integer amount, String paymentType) {
+		return new ChargeHistory(member, impUid, amount, paymentType);
 	}
 }
