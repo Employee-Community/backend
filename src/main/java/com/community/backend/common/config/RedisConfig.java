@@ -10,8 +10,8 @@ import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.community.backend.common.service.RedisService;
-import com.community.backend.common.service.RedisServiceImpl;
+import com.community.backend.common.util.RedisService;
+import com.community.backend.common.util.RedisServiceImpl;
 
 @Configuration
 public class RedisConfig {
