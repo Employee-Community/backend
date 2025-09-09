@@ -3,23 +3,26 @@ package com.community.backend.common.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.community.backend.common.dto.ApiResponse;
 
 import reactor.core.publisher.Mono;
 
 @Component
-public class BaseWebClient {
+public class BaseInternalWebClient {
 
     private final WebClient baseWebClient;
 
-    public BaseWebClient(@Qualifier("jwtWebClient") WebClient baseWebClient) {
+    public BaseInternalWebClient(@Qualifier("internalWebClient") WebClient baseWebClient) {
         this.baseWebClient = baseWebClient;
     }
 
@@ -72,9 +75,21 @@ public class BaseWebClient {
                 });
     }
 
-    public <T> Mono<ResponseEntity<ApiResponse<T>>> get(String uri) {
+    public <T> Mono<ResponseEntity<ApiResponse<T>>> get(String uri, Object parameters) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(uri);
+
+        // DTO 필드를 Map으로 변환 후 query param 추가
+        BeanWrapper beanWrapper = new BeanWrapperImpl(parameters);
+        for (var propertyDescriptor : beanWrapper.getPropertyDescriptors()) {
+            String name = propertyDescriptor.getName();
+            Object value = beanWrapper.getPropertyValue(name);
+            if (value != null) {
+                builder.queryParam(name, value);
+            }
+        }
+
         return baseWebClient.get()
-                .uri(uri)
+                .uri(builder.build().toUri())
                 .retrieve()
                 .toEntity(new ParameterizedTypeReference<ApiResponse<T>>() {
                 });

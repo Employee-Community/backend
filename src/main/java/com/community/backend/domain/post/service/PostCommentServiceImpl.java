@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.community.backend.common.dto.CommonPagingResponseDto;
-import com.community.backend.common.util.BaseWebClient;
+import com.community.backend.common.util.BaseInternalWebClient;
 import com.community.backend.domain.mail.dto.MailSendRequestDto;
 import com.community.backend.domain.member.entity.Member;
 import com.community.backend.domain.member.service.MemberService;
@@ -34,7 +34,7 @@ public class PostCommentServiceImpl implements PostCommentService {
 	private final PostCommentJpaRepository postCommentJpaRepository;
 	private final MemberService memberService;
 	private final PostJpaRepository postJpaRepository;
-	private final BaseWebClient webClient;
+	private final BaseInternalWebClient webClient;
 
 	/**
 	 * 댓글 작성 메서드 / 예외 처리 부분은 PostEnum이 추가되면 추가 작성 예정
