@@ -16,7 +16,7 @@ public class PaymentInternalWebclient {
 
 	private final WebClient webClient;
 
-	public PaymentInternalWebclient(@Qualifier("internalWebclient") WebClient webClient) {
+	public PaymentInternalWebclient(@Qualifier("internalWebClient") WebClient webClient) {
 		this.webClient = webClient;
 	}
 

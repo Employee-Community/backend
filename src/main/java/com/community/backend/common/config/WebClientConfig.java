@@ -5,17 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import com.community.backend.common.security.jwt.JwtPayload;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -37,7 +31,7 @@ public class WebClientConfig {
 				.build();
 	}
 
-	@Bean("internalWebclient")
+	@Bean("internalWebClient")
 	public WebClient internalWebclient() {
 
 		ExchangeStrategies strategies = ExchangeStrategies.builder()
