@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.community.backend.domain.mail.dto.MailSendRequestDto;
@@ -25,6 +26,13 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String username;
 
+    @Async
+    @Override
+    public void sendMailAsync(MailSendRequestDto requestDto) {
+        sendMail(requestDto);
+    }
+
+    @Override
     public MailCode sendMail(MailSendRequestDto requestDto) {
         MailCode result = MailCode.FAIL;
 
@@ -54,11 +62,11 @@ public class MailServiceImpl implements MailService {
                 mailSender.send(message);
 
                 result = MailCode.SUCCESS;
-                successList.add(new MailHistory(requestDto.getFrom(), receiver, message.getSubject(), message.getText(),
+                successList.add(new MailHistory(message.getFrom(), receiver, message.getSubject(), message.getText(),
                         result.toString()));
             } catch (Exception e) {
                 result = MailCode.FAIL;
-                failList.add(new MailHistory(requestDto.getFrom(), receiver, message.getSubject(), message.getText(),
+                failList.add(new MailHistory(message.getFrom(), receiver, message.getSubject(), message.getText(),
                         result.toString()));
             }
         }
