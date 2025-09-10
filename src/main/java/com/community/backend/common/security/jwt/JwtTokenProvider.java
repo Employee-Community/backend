@@ -89,6 +89,7 @@ public class JwtTokenProvider {
 
 		return ResponseCookie.from("refresh", refresh)
 			.httpOnly(true)
+			.secure(false)
 			.maxAge(REFRESH_TOKEN_EXPIRATION_TIME)
 			.path("/")
 			.build();
