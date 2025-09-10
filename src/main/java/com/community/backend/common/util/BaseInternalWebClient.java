@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.community.backend.common.dto.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Mono;
 
@@ -21,9 +22,11 @@ import reactor.core.publisher.Mono;
 public class BaseInternalWebClient {
 
     private final WebClient baseWebClient;
+    private final ObjectMapper objectMapper;
 
     public BaseInternalWebClient(@Qualifier("internalWebClient") WebClient baseWebClient) {
         this.baseWebClient = baseWebClient;
+        this.objectMapper = new ObjectMapper();
     }
 
     public WebClient getWebClient() {
@@ -75,7 +78,7 @@ public class BaseInternalWebClient {
                 });
     }
 
-    public <T> Mono<ResponseEntity<ApiResponse<T>>> get(String uri, Object parameters) {
+    public <T> Mono<ApiResponse<T>> get(String uri, Object parameters, Class<T> clazz) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromPath(uri);
 
         // DTO 필드를 Map으로 변환 후 query param 추가
@@ -89,9 +92,36 @@ public class BaseInternalWebClient {
         }
 
         return baseWebClient.get()
-                .uri(builder.build().toUri())
-                .retrieve()
-                .toEntity(new ParameterizedTypeReference<ApiResponse<T>>() {
-                });
+			.uri(builder.build().toUri())
+			.retrieve()
+			.bodyToMono(new ParameterizedTypeReference<ApiResponse<T>>() {
+			})
+			.map(apiResponse -> {
+				T convertedData = objectMapper.convertValue(apiResponse.getData(), clazz);
+
+				if (apiResponse.isSuccess()) {
+					return ApiResponse.success(apiResponse.getMessage(), convertedData);
+				} else {
+					return ApiResponse.fail(apiResponse.getMessage(), convertedData);
+				}
+			});
+    }
+
+    public <T> Mono<ApiResponse<T>> get(String uri, Class<T> clazz) {
+
+		return baseWebClient.get()
+			.uri(uri)
+			.retrieve()
+			.bodyToMono(new ParameterizedTypeReference<ApiResponse<T>>() {
+			})
+			.map(apiResponse -> {
+				T convertedData = objectMapper.convertValue(apiResponse.getData(), clazz);
+
+				if (apiResponse.isSuccess()) {
+					return ApiResponse.success(apiResponse.getMessage(), convertedData);
+				} else {
+					return ApiResponse.fail(apiResponse.getMessage(), convertedData);
+				}
+			});
     }
 }
