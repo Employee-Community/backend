@@ -1,12 +1,14 @@
 package com.community.backend.domain.member.service;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.community.backend.common.exception.BaseException;
 import com.community.backend.common.security.PasswordEncoder;
+import com.community.backend.common.util.BaseInternalWebClient;
 import com.community.backend.common.webclient.payment.PaymentInternalException;
-import com.community.backend.common.webclient.payment.PaymentInternalWebclient;
 import com.community.backend.common.webclient.payment.dto.PaymentInResponseDto;
 import com.community.backend.domain.member.dto.request.MemberLogInDto;
 import com.community.backend.domain.member.dto.request.MemberRegisterDto;
@@ -24,7 +26,7 @@ public class MemberServiceImpl implements MemberService {
 
 	private final PasswordEncoder passwordEncoder;
 	private final MemberRepository memberRepository;
-	private final PaymentInternalWebclient paymentInternalWebclient;
+	private final BaseInternalWebClient baseInternalWebClient;
 
 	@Override
 	public Member getMemberEntityById(Long memberIdx) {
@@ -91,9 +93,11 @@ public class MemberServiceImpl implements MemberService {
 	public void changeMembership(Long memberIdx, MembershipChangeDto request) {
 
 		Member member = getValidMember(memberIdx);
-		PaymentInResponseDto paymentResponse = paymentInternalWebclient.confirmPayment(request.impUid());
 
-		if(paymentResponse == null) {
+		PaymentInResponseDto response = Objects.requireNonNull(
+			baseInternalWebClient.get("/v1/payment/" + request.impUid(), PaymentInResponseDto.class).block()).getData();
+
+		if(response == null) {
 			throw new BaseException(PaymentInternalException.CHARGE_HISTORY_NOT_FOUND);
 		}
 
