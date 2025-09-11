@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.community.backend.common.exception.BaseException;
+import com.community.backend.common.kafka.TopicNames;
+import com.community.backend.common.kafka.dto.MessageWrapper;
 import com.community.backend.common.security.PasswordEncoder;
 import com.community.backend.common.util.BaseInternalWebClient;
 import com.community.backend.common.webclient.payment.PaymentInternalException;
@@ -15,6 +17,7 @@ import com.community.backend.domain.member.dto.request.MemberRegisterDto;
 import com.community.backend.domain.member.dto.request.MembershipChangeDto;
 import com.community.backend.domain.member.dto.response.MemberResponseDto;
 import com.community.backend.domain.member.entity.Member;
+import com.community.backend.domain.member.event.kafka.producer.MemberKafkaProducer;
 import com.community.backend.domain.member.exception.MemberExceptionEnum;
 import com.community.backend.domain.member.repository.MemberRepository;
 
@@ -27,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final MemberRepository memberRepository;
 	private final BaseInternalWebClient baseInternalWebClient;
+	private final MemberKafkaProducer memberKafkaProducer;
 
 	@Override
 	public Member getMemberEntityById(Long memberIdx) {
@@ -63,6 +67,13 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		member.deleteMember();
+
+		MessageWrapper<Long> msg = MessageWrapper.create(idx, "member.delete");
+		try {
+			memberKafkaProducer.sendMessage(TopicNames.MEMBERS_DELETE_TOPIC, msg);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
