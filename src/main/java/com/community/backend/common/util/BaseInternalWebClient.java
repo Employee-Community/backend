@@ -25,9 +25,9 @@ public class BaseInternalWebClient {
     private final WebClient baseWebClient;
     private final ObjectMapper objectMapper;
 
-    public BaseInternalWebClient(@Qualifier("internalWebClient") WebClient baseWebClient) {
+    public BaseInternalWebClient(@Qualifier("internalWebClient") WebClient baseWebClient, ObjectMapper objectMapper) {
         this.baseWebClient = baseWebClient;
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
     }
 
     public WebClient getWebClient() {
