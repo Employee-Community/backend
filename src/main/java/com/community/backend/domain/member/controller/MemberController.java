@@ -71,10 +71,10 @@ public class MemberController {
 		return ResponseEntity.ok(ApiResponse.success("회원탈퇴가 성공적으로 완료되었습니다.", null));
 	}
 
-	@GetMapping("/{idx}")
-	public ResponseEntity<ApiResponse<MemberResponseDto>> getMember(@PathVariable Long idx) {
+	@GetMapping
+	public ResponseEntity<ApiResponse<MemberResponseDto>> getMember(@AuthenticationPrincipal JwtPayload payload) {
 
-		MemberResponseDto response = memberService.getMemberByIdx(idx);
+		MemberResponseDto response = memberService.getMemberByIdx(payload.idx());
 		return ResponseEntity.ok(ApiResponse.success("회원 조회가 성공적으로 완료되었습니다.", response));
 	}
 
