@@ -1,6 +1,7 @@
 package com.community.backend.common.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeanWrapper;
@@ -92,36 +93,56 @@ public class BaseInternalWebClient {
         }
 
         return baseWebClient.get()
-			.uri(builder.build().toUri())
-			.retrieve()
-			.bodyToMono(new ParameterizedTypeReference<ApiResponse<T>>() {
-			})
-			.map(apiResponse -> {
-				T convertedData = objectMapper.convertValue(apiResponse.getData(), clazz);
+                .uri(builder.build().toUri())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<ApiResponse<T>>() {
+                })
+                .map(apiResponse -> {
+                    T convertedData = objectMapper.convertValue(apiResponse.getData(), clazz);
 
-				if (apiResponse.isSuccess()) {
-					return ApiResponse.success(apiResponse.getMessage(), convertedData);
-				} else {
-					return ApiResponse.fail(apiResponse.getMessage(), convertedData);
-				}
-			});
+                    if (apiResponse.isSuccess()) {
+                        return ApiResponse.success(apiResponse.getMessage(), convertedData);
+                    } else {
+                        return ApiResponse.fail(apiResponse.getMessage(), convertedData);
+                    }
+                });
     }
 
     public <T> Mono<ApiResponse<T>> get(String uri, Class<T> clazz) {
 
-		return baseWebClient.get()
-			.uri(uri)
-			.retrieve()
-			.bodyToMono(new ParameterizedTypeReference<ApiResponse<T>>() {
-			})
-			.map(apiResponse -> {
-				T convertedData = objectMapper.convertValue(apiResponse.getData(), clazz);
+        return baseWebClient.get()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<ApiResponse<T>>() {
+                })
+                .map(apiResponse -> {
+                    T convertedData = objectMapper.convertValue(apiResponse.getData(), clazz);
 
-				if (apiResponse.isSuccess()) {
-					return ApiResponse.success(apiResponse.getMessage(), convertedData);
-				} else {
-					return ApiResponse.fail(apiResponse.getMessage(), convertedData);
-				}
-			});
+                    if (apiResponse.isSuccess()) {
+                        return ApiResponse.success(apiResponse.getMessage(), convertedData);
+                    } else {
+                        return ApiResponse.fail(apiResponse.getMessage(), convertedData);
+                    }
+                });
     }
+
+    public <T> Mono<ApiResponse<List<T>>> getList(String uri, Class<T> clazz) {
+        return baseWebClient.get()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<ApiResponse<List<Object>>>() {
+                })
+                .map(apiResponse -> {
+                    List<T> convertedData = objectMapper.convertValue(
+                            apiResponse.getData(),
+                            objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+
+                    if (apiResponse.isSuccess()) {
+                        return ApiResponse.success(apiResponse.getMessage(), convertedData);
+                    } else {
+                        return ApiResponse.fail(apiResponse.getMessage(), convertedData);
+                    }
+                });
+    }
+
 }
