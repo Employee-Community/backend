@@ -1,5 +1,7 @@
 package com.community.backend.domain.member.service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -120,5 +122,16 @@ public class MemberServiceImpl implements MemberService {
 		return memberRepository.getMemberByIdx(memberIdx).orElseThrow(
 			() -> new BaseException(MemberExceptionEnum.MEMBER_NOT_FOUND)
 		);
+	}
+
+	@Override
+	public List<MemberResponseDto> getMemberByIdxs(String idxs) {
+		List<MemberResponseDto> result = null;
+
+		List<Long> memberIdxs = Arrays.stream(idxs.split(",")).map(Long::parseLong).toList();
+
+		result = memberRepository.getMemberByIdxs(memberIdxs).stream().map(m -> MemberResponseDto.fromMember(m)).toList();
+
+		return result;
 	}
 }

@@ -52,8 +52,9 @@ public class PostController {
 
     @PostMapping("create")
     public ResponseEntity<ApiResponse<Void>> createPost(
-            @Valid @RequestBody PostCreateRequestDto requestDto) {
-        postService.createPost(requestDto);
+            @Valid @RequestBody PostCreateRequestDto requestDto,
+            @AuthenticationPrincipal JwtPayload jwtPayload) {
+        postService.createPost(requestDto, jwtPayload);
 
         return ResponseEntity.ok(ApiResponse.success("ok", null));
     }

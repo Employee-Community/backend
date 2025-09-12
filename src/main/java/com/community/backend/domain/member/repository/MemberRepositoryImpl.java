@@ -1,10 +1,10 @@
 package com.community.backend.domain.member.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import com.community.backend.domain.member.dto.response.MemberResponseDto;
 import com.community.backend.domain.member.entity.Member;
 
 import lombok.RequiredArgsConstructor;
@@ -37,5 +37,10 @@ public class MemberRepositoryImpl implements MemberRepository {
 	public Optional<Member> getMemberById(String id) {
 
 		return jpaRepository.findById(id);
+	}
+
+	@Override
+	public List<Member> getMemberByIdxs(List<Long> idxs) {
+		return jpaRepository.findAllById(idxs);
 	}
 }

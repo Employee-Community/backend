@@ -1,8 +1,7 @@
 package com.community.backend.domain.post.repository;
 
-import static com.community.backend.domain.category.entity.QCategory.category;
-import static com.community.backend.domain.member.entity.QMember.member;
 import static com.community.backend.domain.post.entity.QPost.post;
+import static com.community.backend.domain.postcategory.entity.QPostCategory.postCategory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,11 +31,15 @@ public class PostRepositoryImpl implements PostRepository {
     };
 
     @Override
+    public List<Post> getPostsByIdxs(List<Long> idxs) {
+        return jpaRepository.findAllById(idxs);
+    }
+
+    @Override
     public Page<Post> getPosts(PostPagingRequestDto requestDto, Pageable pageable) {
         List<Post> result = queryFactory
                 .selectFrom(post)
-                .leftJoin(post.member, member)
-                .leftJoin(post.category, category)
+                .leftJoin(post.category, postCategory)
                 .where(
                         PostBooleanExpression.memberIdxEq(requestDto.getMemberIdx()),
                         PostBooleanExpression.categoryEq(requestDto.getCategoryIdx()),
@@ -50,8 +53,7 @@ public class PostRepositoryImpl implements PostRepository {
         long totalCount = queryFactory
                 .select(post.count())
                 .from(post)
-                .leftJoin(post.member, member)
-                .leftJoin(post.category, category)
+                .leftJoin(post.category, postCategory)
                 .where(
                         PostBooleanExpression.memberIdxEq(requestDto.getMemberIdx()),
                         PostBooleanExpression.categoryEq(requestDto.getCategoryIdx()),
@@ -67,7 +69,7 @@ public class PostRepositoryImpl implements PostRepository {
         LocalDateTime now = LocalDateTime.now();
 
         queryFactory.insert(post)
-                .columns(post.title, post.contents, post.member.idx, post.category.idx, post.createdAt, post.updatedAt,
+                .columns(post.title, post.contents, post.memberIdx, post.category.idx, post.createdAt, post.updatedAt,
                         post.viewCount, post.state)
                 .values(postParam.getTitle(), postParam.getContents(), memberIdx, categoryIdx, now, now,
                         postParam.getViewCount(), postParam.getState())

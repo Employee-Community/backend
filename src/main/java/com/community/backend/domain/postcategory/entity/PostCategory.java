@@ -1,4 +1,4 @@
-package com.community.backend.domain.category.entity;
+package com.community.backend.domain.postcategory.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "TBL_JOBTALK_POST_CATEGORY")
-public class Category {
+public class PostCategory {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

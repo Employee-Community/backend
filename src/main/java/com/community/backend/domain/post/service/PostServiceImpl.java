@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +18,10 @@ import org.springframework.stereotype.Service;
 import com.community.backend.common.dto.CommonPagingResponseDto;
 import com.community.backend.common.exception.BaseException;
 import com.community.backend.common.security.jwt.JwtPayload;
+import com.community.backend.common.util.BaseInternalWebClient;
 import com.community.backend.common.util.RedisService;
+import com.community.backend.domain.member.dto.response.MemberResponseDto;
+import com.community.backend.domain.member.entity.Member;
 import com.community.backend.domain.post.dto.request.PostCreateRequestDto;
 import com.community.backend.domain.post.dto.request.PostModifyRequestDto;
 import com.community.backend.domain.post.dto.request.PostPagingRequestDto;
@@ -34,6 +39,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final RedisService<Long> redisService;
+    private final BaseInternalWebClient webClient;
 
     private final static String REDIS_KEY_PREFIX_VIEW_COUNT = "post:views";
     private final static Long REDIS_DURATION_VIEW_COUNT = 60L * 60L;
@@ -43,6 +49,15 @@ public class PostServiceImpl implements PostService {
         PostResponseDto result = null;
 
         Post post = existPost(postIdx);
+
+        MemberResponseDto member = null;
+        
+        try {
+            member = Objects.requireNonNull(webClient.get("/v1/member/" + post.getMemberIdx(), MemberResponseDto.class).block()).getData();
+        } catch(Exception e) {
+            e.getStackTrace();
+            e.printStackTrace();
+        }
 
         // TODO : 사용자마다 조회 쿨타임? 적용해야 함
         post.setViewCount(post.getViewCount() + 1);
@@ -58,7 +73,7 @@ public class PostServiceImpl implements PostService {
             redisService.incrementValue(redisKey, 1L);
         }
 
-        result = new PostResponseDto(post);
+        result = new PostResponseDto(post, member.idx(), member.nickname());
 
         return result;
     }
@@ -73,7 +88,24 @@ public class PostServiceImpl implements PostService {
         int totalPage = 0;
 
         Page<Post> result = postRepository.getPosts(requestDto, pageable);
-        responseList = result.stream().map(post -> new PostResponseDto(post)).toList();
+
+        // Member 리스트 불러오는 로직
+        // String memberIdxs = result.stream().map(p -> p.getMemberIdx()).distinct().map(String::valueOf)
+        //         .collect(Collectors.joining(","));
+        // List<MemberResponseDto> memberList = webClient.getList("/v1/member/list?idxs=" + memberIdxs, MemberResponseDto.class).block()
+        //         .getData();
+        // Map<Long, MemberResponseDto> memberMap = memberList.stream()
+        //         .collect(Collectors.toMap(MemberResponseDto::idx, m -> m));
+
+        Map<Long, MemberResponseDto> memberMap = new HashMap<>();
+        // List<Long> memberIdxList = result.stream().map(p -> p.getMemberIdx()).distinct().toList();
+        // for(Long idx : memberIdxList) {
+        //     MemberResponseDto member = webClient.get("/v1/member/" + idx, MemberResponseDto.class).block().getData();
+        //     memberMap.put(member.idx(), member);
+        // }
+
+        responseList = result.stream()
+                .map(post -> new PostResponseDto(post, 0L, "")).toList();
         totalCount = result.getTotalElements();
         totalPage = (int) Math.ceil((double) totalCount / requestDto.getSize());
 
@@ -89,7 +121,6 @@ public class PostServiceImpl implements PostService {
         List<PostResponseDto> result = new ArrayList<>();
 
         String keyPattern = String.format("%s:*:*", REDIS_KEY_PREFIX_VIEW_COUNT);
-
         Set<String> keys = redisService.getKeys(keyPattern);
 
         Map<Long, Long> viewCountMap = new HashMap<>();
@@ -102,39 +133,52 @@ public class PostServiceImpl implements PostService {
                 String[] parts = key.split(":");
                 if (parts.length == 4) {
                     Long postIdx = Long.parseLong(parts[2]);
-
                     Integer viewCount = Integer.parseInt(redisService.getValue(key).toString());
 
-                    if (viewCountMap.containsKey(postIdx)) {
-                        viewCountMap.put(postIdx, viewCountMap.get(postIdx) + viewCount);
-                    } else {
-                        viewCountMap.put(postIdx, (long) viewCount);
-                    }
+                    viewCountMap.put(postIdx, viewCountMap.getOrDefault(postIdx, 0L) + viewCount);
                 }
             }
         }
 
-        result = viewCountMap.entrySet()
-                .stream()
+        List<Long> topPostIdxs = viewCountMap.entrySet().stream()
                 .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
                 .limit(10)
                 .map(Map.Entry::getKey)
-                .toList().stream()
-                .map(postIdx -> new PostResponseDto(postRepository.getPostByIdx(postIdx).orElse(null)))
+                .toList();
+
+        if (topPostIdxs.isEmpty())
+            return result;
+
+        // Post 리스트 조회
+        List<Post> posts = postRepository.getPostsByIdxs(topPostIdxs);
+
+        // Member 리스트 불러오기
+        String memberIdxs = posts.stream()
+                .map(Post::getMemberIdx)
+                .distinct()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        List<Member> memberList = webClient.getList("/v1/member/list?idxs=" + memberIdxs, Member.class)
+                .block().getData();
+        Map<Long, Member> memberMap = memberList.stream()
+                .collect(Collectors.toMap(Member::getIdx, m -> m));
+
+        result = posts.stream()
+                .map(post -> new PostResponseDto(post, memberMap.getOrDefault(post.getMemberIdx(), null)))
                 .toList();
 
         return result;
     }
 
     @Transactional
-    public void createPost(PostCreateRequestDto requestDto) {
+    public void createPost(PostCreateRequestDto requestDto, JwtPayload jwtPayload) {
         Post post = new Post();
         post.setTitle(requestDto.title());
         post.setContents(requestDto.contents());
         post.setViewCount(0);
         post.setState(1);
 
-        postRepository.createPost(post, requestDto.memberIdx(), requestDto.categoryIdx());
+        postRepository.createPost(post, jwtPayload.idx(), requestDto.categoryIdx());
     }
 
     @Transactional
@@ -174,7 +218,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private void isPostMemberMatch(Post post, Long memberIdx) {
-        if (post.getMember().getIdx().equals(memberIdx) == false)
+        if (post.getMemberIdx().equals(memberIdx) == false)
             throw new BaseException(PostExceptionEnum.POST_MEMBER_NOT_MATCH);
     }
 }

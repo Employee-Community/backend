@@ -1,11 +1,11 @@
 package com.community.backend.domain.member.controller;
 
-import org.apache.coyote.Response;
+import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +25,6 @@ import com.community.backend.domain.member.dto.request.MemberLogInDto;
 import com.community.backend.domain.member.dto.request.MemberRegisterDto;
 import com.community.backend.domain.member.dto.request.MembershipChangeDto;
 import com.community.backend.domain.member.dto.response.MemberResponseDto;
-import com.community.backend.domain.member.enums.MemberRole;
 import com.community.backend.domain.member.service.MemberService;
 
 import jakarta.servlet.http.Cookie;
@@ -127,5 +125,21 @@ public class MemberController {
 
 		memberService.changeMembership(payload.idx(), request);
 		return ResponseEntity.ok(ApiResponse.success("멤버쉽이 성공적으로 변경되었습니다.", null));
+	}
+
+	@GetMapping("/{idx}")
+	public ResponseEntity<ApiResponse<MemberResponseDto>> getMember(@PathVariable Long idx) {
+
+		MemberResponseDto response = memberService.getMemberByIdx(idx);
+		return ResponseEntity.ok(ApiResponse.success("회원 조회가 성공적으로 완료되었습니다.", response));
+	}
+
+	// Member Idx 리스트를 통해 Member 리스트를 불러오는 API(내부 호출용)
+	@GetMapping("/list")
+	public ResponseEntity<ApiResponse<List<MemberResponseDto>>> getMembersByIdxs(
+		@RequestParam String idxs
+	) {
+		List<MemberResponseDto> response = memberService.getMemberByIdxs(idxs);
+		return ResponseEntity.ok(ApiResponse.success("멤버 목록이 성공적으로 조회되었습니다,", response));
 	}
 }

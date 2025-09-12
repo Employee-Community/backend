@@ -1,8 +1,7 @@
 package com.community.backend.domain.post.entity;
 
 import com.community.backend.common.entity.BaseEntity;
-import com.community.backend.domain.category.entity.Category;
-import com.community.backend.domain.member.entity.Member;
+import com.community.backend.domain.postcategory.entity.PostCategory;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,13 +29,12 @@ public class Post extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idx;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_idx", nullable = false)
-	private Member member;
+	@Column(name = "member_idx", nullable = false)
+	private Long memberIdx;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_idx", nullable = false)
-	private Category category;
+	private PostCategory category;
 
 	@Column(name = "title", nullable = false)
 	private String title;

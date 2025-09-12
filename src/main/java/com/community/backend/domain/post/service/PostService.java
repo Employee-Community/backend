@@ -17,7 +17,7 @@ public interface PostService {
 
     List<PostResponseDto> getPopularPosts();
 
-    void createPost(PostCreateRequestDto requestDto);
+    void createPost(PostCreateRequestDto requestDto, JwtPayload jwtPayload);
 
     void modifyPost(PostModifyRequestDto requestDto, Long postIdx, JwtPayload jwtPayload);
 
