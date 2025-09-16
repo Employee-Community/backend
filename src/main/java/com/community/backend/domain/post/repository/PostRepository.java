@@ -24,4 +24,6 @@ public interface PostRepository {
 
     // 게시글 저장(수정, 삭제)
     void savePost(Post post);
+
+    void deleteAllPosts(Long memberIdx);
 }

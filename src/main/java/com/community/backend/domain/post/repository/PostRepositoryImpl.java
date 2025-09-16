@@ -80,4 +80,13 @@ public class PostRepositoryImpl implements PostRepository {
     public void savePost(Post post) {
         jpaRepository.save(post);
     }
+
+    @Override
+    public void deleteAllPosts(Long memberIdx) {
+
+        queryFactory.update(post)
+            .set(post.state, 2)
+            .where(PostBooleanExpression.memberIdxEq(memberIdx))
+            .execute();
+    }
 }
