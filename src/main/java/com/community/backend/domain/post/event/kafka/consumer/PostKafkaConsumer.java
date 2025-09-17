@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.community.backend.common.kafka.GroupId;
 import com.community.backend.common.kafka.TopicNames;
 import com.community.backend.common.kafka.dto.MessageWrapper;
+import com.community.backend.common.kafka.dto.memberDto.MemberRequestDto;
 import com.community.backend.domain.post.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class PostKafkaConsumer {
 
 	@Transactional
 	@KafkaListener(topics = TopicNames.MEMBERS_DELETE_TOPIC, groupId = GroupId.MEMBER_GROUP_ID, containerFactory = "kafkaListenerContainerFactory")
-	public void handleMemberDelete(@Payload MessageWrapper<Long> wrapper){
+	public void handleMemberDelete(@Payload MessageWrapper<MemberRequestDto> wrapper){
 
-		postRepository.deleteAllPosts(wrapper.data());
+		postRepository.deleteAllPosts(wrapper.data().memberIdx());
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.community.backend.common.exception.BaseException;
 import com.community.backend.common.kafka.TopicNames;
 import com.community.backend.common.kafka.dto.MessageWrapper;
+import com.community.backend.common.kafka.dto.memberDto.MemberRequestDto;
 import com.community.backend.common.security.PasswordEncoder;
 import com.community.backend.common.util.BaseInternalWebClient;
 import com.community.backend.common.webclient.payment.PaymentInternalException;
@@ -70,7 +71,8 @@ public class MemberServiceImpl implements MemberService {
 
 		member.deleteMember();
 
-		MessageWrapper<Long> msg = MessageWrapper.create(idx, "member.delete");
+		MemberRequestDto memberRequestDto = new MemberRequestDto(member.getIdx(), member.getEmail());
+		MessageWrapper<MemberRequestDto> msg = MessageWrapper.create(memberRequestDto, "member.delete");
 		try {
 			memberKafkaProducer.sendMessage(TopicNames.MEMBERS_DELETE_TOPIC, msg);
 		}catch (Exception e) {
