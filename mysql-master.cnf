@@ -1,0 +1,17 @@
+[mysqld]
+# Replication settings
+bind-address = 0.0.0.0
+server-id = 1
+log-bin = mysql-bin
+binlog-format = ROW
+binlog-do-db = jobtalk_db
+
+# Performance settings
+innodb_buffer_pool_size = 256M
+innodb_log_file_size = 64M
+innodb_flush_log_at_trx_commit = 1
+sync_binlog = 1
+
+# Character set
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
