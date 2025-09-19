@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -26,3 +28,45 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     depends_on:
       - kafka
+
+  mysql-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: jobtalk_db
+      MYSQL_USER: jobtalk_user
+      MYSQL_PASSWORD: jobtalk_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_master_data:/var/lib/mysql
+      - ./mysql-master.cnf:/etc/mysql/conf.d/mysql.cnf
+    networks:
+      - db-network
+
+  mysql-slave:
+    image: mysql:8.0
+    container_name: mysql-slave
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: jobtalk_db
+      MYSQL_USER: jobtalk_user
+      MYSQL_PASSWORD: jobtalk_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_slave_data:/var/lib/mysql
+      - ./mysql-slave.cnf:/etc/mysql/conf.d/mysql.cnf
+    depends_on:
+      - mysql-master
+    networks:
+      - db-network
+
+volumes:
+  mysql_master_data:
+  mysql_slave_data:
+
+networks:
+  db-network:
+    driver: bridge
