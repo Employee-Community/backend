@@ -19,12 +19,12 @@ spring:
 
   datasource:
     master:
-      url: jdbc:mysql://127.0.0.1:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://${MASTER_DB_ENDPOINT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       username: ${USERNAME}
       password: ${PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
     slave:
-      url: jdbc:mysql://127.0.0.1:3307/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://${MASTER_DB_ENDPOINT}/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       username: ${USERNAME}
       password: ${PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
