@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;IGNORE_UNKNOWN_SETTINGS=TRUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    driver-class-name: org.h2.Driver
+    username: test
+    password:
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    # database-platform 대신 properties 안에 dialect 명시
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        highlight_sql: true
