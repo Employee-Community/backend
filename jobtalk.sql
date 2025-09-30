@@ -25,6 +25,7 @@ CREATE TABLE TBL_JOBTALK_POST_CATEGORY (
 
 CREATE TABLE TBL_JOBTALK_POST (
                                      idx BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                     name VARCHAR(255) NOT NULL,
                                      member_idx BIGINT NOT NULL,
                                      category_idx BIGINT NOT NULL,
                                      title VARCHAR(255) NOT NULL,
@@ -33,7 +34,6 @@ CREATE TABLE TBL_JOBTALK_POST (
                                      state TINYINT NOT NULL DEFAULT 1,
                                      created_at DATETIME,
                                      updated_at DATETIME,
-                                     FOREIGN KEY (member_idx) REFERENCES TBL_JOBTALK_MEMBER(idx),
                                      FOREIGN KEY (category_idx) REFERENCES TBL_JOBTALK_POST_CATEGORY(idx)
 );
 
@@ -45,8 +45,7 @@ CREATE TABLE TBL_JOBTALK_COMMENT (
                                      state TINYINT NOT NULL DEFAULT 1,
                                      created_at DATETIME,
                                      updated_at DATETIME,
-                                     FOREIGN KEY (post_idx) REFERENCES TBL_JOBTALK_POST(idx),
-                                     FOREIGN KEY (member_idx) REFERENCES TBL_JOBTALK_MEMBER(idx)
+                                     FOREIGN KEY (post_idx) REFERENCES TBL_JOBTALK_POST(idx)
 );
 
 
