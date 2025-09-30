@@ -66,6 +66,8 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+
+	testImplementation 'com.h2database:h2'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
